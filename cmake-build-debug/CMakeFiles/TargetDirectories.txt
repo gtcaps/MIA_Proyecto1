@@ -1,0 +1,3 @@
+/home/gtcaps/Documents/VacasJunio-MIA-Proyecto1/cmake-build-debug/CMakeFiles/VacasJunio_MIA_Proyecto1.dir
+/home/gtcaps/Documents/VacasJunio-MIA-Proyecto1/cmake-build-debug/CMakeFiles/edit_cache.dir
+/home/gtcaps/Documents/VacasJunio-MIA-Proyecto1/cmake-build-debug/CMakeFiles/rebuild_cache.dir
