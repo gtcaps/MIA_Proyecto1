@@ -3,4 +3,4 @@ project(VacasJunio_MIA_Proyecto1)
 
 set(CMAKE_CXX_STANDARD 23)
 
-add_executable(VacasJunio_MIA_Proyecto1 main.cpp Consola.cpp Consola.h)
+add_executable(VacasJunio_MIA_Proyecto1 main.cpp Consola.cpp Consola.h Structs.h)
