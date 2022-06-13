@@ -48,6 +48,11 @@ bool Consola::ejecutarComando(string comando) {
         return rmdisk(comando);
     }
 
+    // FDISK ================
+    if (comando.starts_with("fdisk")) {
+        return fdisk(comando);
+    }
+
     cout << "comando: invalido" << endl;
 
     return false;
@@ -115,6 +120,87 @@ bool Consola::rmdisk(string comando) {
 
     Rmdisk rmdisk;
     return rmdisk.eliminarDisco(path);
+
+}
+
+bool Consola::fdisk(string comando) {
+
+    vector<string> v = getAtributtes(comando);
+    int size = 0;
+    string path = "", name = "", unit = "", type = "", fit = "", del = "", add = "", mov = "";
+
+    for (auto it: v) {
+        vector<string> s = split(it);
+
+        if (s.at(0) == "size") {
+            if (!isNumber(s.at(1)) || s.at(1) == "0") {
+                cout << endl << " *** El size debe de ser un numero mayor a 0 ***" << endl << endl;
+                return false;
+            }
+
+            size = stoi(s.at(1));
+            continue;
+        }
+
+        if (s.at(0) == "path") {
+            path = s.at(1);
+            continue;
+        }
+
+        if (s.at(0) == "name") {
+            name = s.at(1);
+            continue;
+        }
+
+        if (s.at(0) == "unit") {
+            unit = s.at(1);
+            continue;
+        }
+
+        if (s.at(0) == "type") {
+            type = s.at(1);
+            continue;
+        }
+
+        if (s.at(0) == "fit") {
+            fit = s.at(1);
+            continue;
+        }
+
+        if (s.at(0) == "delete") {
+            del = s.at(1);
+            continue;
+        }
+
+        if (s.at(0) == "add") {
+            add = s.at(1);
+            continue;
+        }
+
+        if (s.at(0) == "mov") {
+            mov = s.at(1);
+            continue;
+        }
+    }
+
+    // Parametros obligatorios
+    if (size == 0 || path.empty() || name.empty()) {
+        cout << endl << " *** Parametros obligatorios: size, path, name *** " << endl << endl;
+        return false;
+    }
+
+    // Unidades
+    if (unit == "") {
+        unit  = "k";
+    }
+
+    if (type == "") {
+        type = "b";
+    }
+
+    if (fit == "") {
+        fit = "wf";
+    }
 
 }
 
