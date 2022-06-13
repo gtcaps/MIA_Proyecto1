@@ -6,6 +6,7 @@
 #include "Consola.h"
 
 #include "Mkdisk.h"
+#include "Rmdisk.h"
 
 using namespace std;
 
@@ -40,6 +41,11 @@ bool Consola::ejecutarComando(string comando) {
     // MKDISK ================
     if (comando.starts_with("mkdisk")) {
         return mkdisk(comando);
+    }
+
+    // RMDISK ================
+    if (comando.starts_with("rmdisk")) {
+        return rmdisk(comando);
     }
 
     cout << "comando: invalido" << endl;
@@ -81,12 +87,35 @@ bool Consola::mkdisk(string comando) {
     }
 
     if (size == 0 || path.empty() || name.empty()) {
-        cout << endl << " *** Parametros obligatorios: size, path, name *** " << endl;
+        cout << endl << " *** Parametros obligatorios: size, path, name *** " << endl << endl;
         return false;
     }
 
     Mkdisk mkdisk;
     return mkdisk.crearDisco(size, path, name);
+}
+
+bool Consola::rmdisk(string comando) {
+
+    vector<string> v = getAtributtes(comando);
+    string path = "";
+
+    for (auto it: v) {
+        vector<string> s = split(it);
+
+        if (s.at(0) == "path") {
+            path = s.at(1);
+        }
+    }
+
+    if (path.empty() ) {
+        cout << endl << " *** Parametros obligatorios: path *** " << endl << endl;
+        return false;
+    }
+
+    Rmdisk rmdisk;
+    return rmdisk.eliminarDisco(path);
+
 }
 
 string Consola::toLowerCase(string text) {
@@ -105,7 +134,7 @@ vector<string> Consola::getAtributtes(string comando) {
     string valor = "";
     for (int i = 0; i < comando.length(); i++) {
         char c = comando[i];
-        if (c == '$') {
+        if (c == '$' || c == '@') {
             for (int j = i + 1; j < comando.length(); j++) {
                 c = comando [j];
                 if (c == '=') {
