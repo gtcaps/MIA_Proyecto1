@@ -2,8 +2,10 @@
 // Created by gtcaps on 7/06/22.
 //
 #include <iostream>
-#include <string.h>
+#include <string>
 #include "Consola.h"
+
+#include "Mkdisk.h"
 
 using namespace std;
 
@@ -16,7 +18,7 @@ void Consola::ejecutar() {
 
     while (true) {
         cout << "> ";
-        getline(cin, comando, '\n');
+        getline(cin, comando);
 
         // Salir de la consola
         if (comando == "exit") {
@@ -33,6 +35,7 @@ void Consola::ejecutar() {
 }
 
 bool Consola::ejecutarComando(string comando) {
+
 
     // MKDISK ================
     if (comando.starts_with("mkdisk")) {
@@ -74,6 +77,7 @@ bool Consola::mkdisk(string comando) {
         if (s.at(0) == "name") {
             name = s.at(1);
         }
+
     }
 
     if (size == 0 || path.empty() || name.empty()) {
@@ -81,9 +85,8 @@ bool Consola::mkdisk(string comando) {
         return false;
     }
 
-    cout << "Creando disco de " << size << endl;
-
-    return true;
+    Mkdisk mkdisk;
+    return mkdisk.crearDisco(size, path, name);
 }
 
 string Consola::toLowerCase(string text) {
@@ -125,6 +128,7 @@ vector<string> Consola::getAtributtes(string comando) {
                     comilla = !comilla;
                     continue;
                 }
+
 
                 if (c == ' ' && !comilla) {
                     i = j;

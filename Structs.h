@@ -14,7 +14,7 @@ struct Particion {
 
 struct MBR {
     int         tamano;
-    time_t      fecha_creacion;
+    char        fecha_creacion[20];
     int         disk_signature;
     Particion   particiones[4];
 };
