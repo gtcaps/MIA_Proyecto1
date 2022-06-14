@@ -61,7 +61,7 @@ bool Mkdisk::crearDisco(int size, string path, string name) {
     tm = localtime(&t);
     strftime(fechayhora, 20, "%d/%m/%Y %H:%M:%S", tm);
 
-    size = size * 1000 * 1000; //Mb
+    size = size * 1024 * 1024; //Mb
 
     // Crear MBR del disco
     MBR mbr;
@@ -70,7 +70,7 @@ bool Mkdisk::crearDisco(int size, string path, string name) {
     mbr.disk_signature = rand() % 1000;
 
     cout << endl << "Disco creado" << endl;
-    cout << "Size: " << mbr.tamano / (1000 * 1000) << "MB" << endl;
+    cout << "Size: " << mbr.tamano / (1024 * 1024) << "MB" << endl;
     cout << "Fecha: " << mbr.fecha_creacion << endl;
     cout << "Signature: " << mbr.disk_signature  << endl;
 

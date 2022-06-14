@@ -7,6 +7,7 @@
 
 #include "Mkdisk.h"
 #include "Rmdisk.h"
+#include "Fdisk.h"
 
 using namespace std;
 
@@ -195,12 +196,15 @@ bool Consola::fdisk(string comando) {
     }
 
     if (type == "") {
-        type = "b";
+        type = "p";
     }
 
     if (fit == "") {
         fit = "wf";
     }
+
+    Fdisk fdisk;
+    return fdisk.administrarParticion(size, path, name, unit, type, fit, del, add, mov);
 
 }
 

@@ -20,11 +20,13 @@ struct MBR {
 };
 
 struct EBR {
+    char    status = '0';
     char    fit = ' ';
     int     part_start = 0;
     int     size = 0;
     int     next = -1;
-    char    name[16] = "";
+    char    name[16] = "NoName";
+
 };
 
 struct SuperBloque {
