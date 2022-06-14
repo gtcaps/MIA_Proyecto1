@@ -8,7 +8,7 @@
 #include "Mkdisk.h"
 #include "Rmdisk.h"
 #include "Fdisk.h"
-#include "Mount.h"
+
 
 using namespace std;
 
@@ -58,6 +58,11 @@ bool Consola::ejecutarComando(string comando) {
     // MOUNT ================
     if (comando.starts_with("mount")) {
         return mount(comando);
+    }
+
+    // UNMOUNT ================
+    if (comando.starts_with("unmount")) {
+        return unmount(comando);
     }
 
     cout << "comando: invalido" << endl;
@@ -219,6 +224,12 @@ bool Consola::mount(string comando)  {
     vector<string> v = getAtributtes(comando);
     string path = "", name = "";
 
+    // Si no trae parametros, mostrar el listado de particiones
+    if (v.size() == 0)  {
+        montaje.leerMontaje();
+        return true;
+    }
+
     for (auto it: v) {
         vector<string> s = split(it);
         cout << it << endl;
@@ -232,13 +243,44 @@ bool Consola::mount(string comando)  {
         }
     }
 
+
+
     if (path.empty() || name.empty()) {
-        cout << endl << " *** Parametros obligatorios: path y name *** " << endl << endl;
+        cout << endl << " *** Parametros obligatorios: path, name *** " << endl << endl;
         return false;
     }
 
-
     return montaje.montarParticion(path, name);
+
+}
+
+bool Consola::unmount(string comando)   {
+
+    vector<string> v = getAtributtes(comando);
+    vector<string> ids;
+
+    for (auto it: v) {
+        vector<string> s = split(it);
+        cout << it << endl;
+
+        if (s.at(0).starts_with("id")) {
+            ids.insert(ids.end(), s.at(1));
+        }
+
+    }
+
+    if (ids.empty()) {
+        cout << endl << " *** Parametros obligatorios: id *** " << endl << endl;
+        return false;
+    }
+
+    for (string id: ids) {
+        //cout << endl << " *** Desmontando " << id << " ***" << endl;
+        montaje.desmontarParticion(id);
+    }
+
+    return true;
+
 
 }
 

@@ -18,14 +18,14 @@ public:
     void ejecutar();
 private:
     bool ejecutarComando(string comando);
-
+    Mount montaje;
 
     // comandos
     bool mkdisk(string comando);
     bool rmdisk(string comando);
     bool fdisk(string comando);
     bool mount(string comando);
-    bool umount(string comando);
+    bool unmount(string comando);
     bool mkfs(string comando);
     bool mkfile(string comando);
     bool script(string comando);
@@ -38,7 +38,7 @@ private:
     bool loss(string comando);
     bool rep(string comando);
 
-    Mount montaje;
+
 
     string toLowerCase(string text);
 
