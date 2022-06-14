@@ -8,6 +8,7 @@
 #include "Mkdisk.h"
 #include "Rmdisk.h"
 #include "Fdisk.h"
+#include "Mount.h"
 
 using namespace std;
 
@@ -52,6 +53,11 @@ bool Consola::ejecutarComando(string comando) {
     // FDISK ================
     if (comando.starts_with("fdisk")) {
         return fdisk(comando);
+    }
+
+    // MOUNT ================
+    if (comando.starts_with("mount")) {
+        return mount(comando);
     }
 
     cout << "comando: invalido" << endl;
@@ -205,6 +211,34 @@ bool Consola::fdisk(string comando) {
 
     Fdisk fdisk;
     return fdisk.administrarParticion(size, path, name, unit, type, fit, del, add, mov);
+
+}
+
+bool Consola::mount(string comando)  {
+
+    vector<string> v = getAtributtes(comando);
+    string path = "", name = "";
+
+    for (auto it: v) {
+        vector<string> s = split(it);
+        cout << it << endl;
+
+        if (s.at(0) == "path") {
+            path = s.at(1);
+        }
+
+        if (s.at(0) == "name") {
+            name = s.at(1);
+        }
+    }
+
+    if (path.empty() || name.empty()) {
+        cout << endl << " *** Parametros obligatorios: path y name *** " << endl << endl;
+        return false;
+    }
+
+
+    return montaje.montarParticion(path, name);
 
 }
 

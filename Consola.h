@@ -8,6 +8,7 @@
 
 #include <vector>
 #include <string>
+#include "Mount.h"
 
 using namespace std;
 
@@ -17,6 +18,7 @@ public:
     void ejecutar();
 private:
     bool ejecutarComando(string comando);
+
 
     // comandos
     bool mkdisk(string comando);
@@ -35,6 +37,8 @@ private:
     bool pause(string comando);
     bool loss(string comando);
     bool rep(string comando);
+
+    Mount montaje;
 
     string toLowerCase(string text);
 
