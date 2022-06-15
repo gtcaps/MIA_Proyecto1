@@ -9,6 +9,7 @@
 #include "Mkdisk.h"
 #include "Rmdisk.h"
 #include "Fdisk.h"
+#include "Rep.h"
 
 
 using namespace std;
@@ -78,6 +79,11 @@ bool Consola::ejecutarComando(string comando) {
     // EXEC ================
     if (lcomando.starts_with("exec")) {
         return exec(comando);
+    }
+
+    // REP ================
+    if (lcomando.starts_with("rep")) {
+        return rep(lcomando);
     }
 
 
@@ -330,6 +336,42 @@ bool Consola::unmount(string comando)   {
         //cout << endl << " *** Desmontando " << id << " ***" << endl;
         montaje.desmontarParticion(id);
     }
+
+    return true;
+
+
+}
+
+bool Consola::rep(string comando)   {
+
+    vector<string> v = getAtributtes(comando);
+    string name = "", path = "", id = "";
+
+    for (auto it: v) {
+        vector<string> s = split(it);
+
+        if (s.at(0).starts_with("name")) {
+            name = s.at(1);
+        }
+
+        if (s.at(0).starts_with("path")) {
+            path = s.at(1);
+        }
+
+        if (s.at(0).starts_with("id")) {
+            id = s.at(1);
+        }
+
+    }
+
+    if (name.empty() || path.empty() || id.empty()) {
+        cout << endl << " *** Parametros obligatorios: name, path, id *** " << endl << endl;
+        return false;
+    }
+
+
+    Rep rep;
+    rep.crearReporte(path, name, id, montaje);
 
     return true;
 
