@@ -15,7 +15,7 @@ public:
     Rep();
     bool crearReporte(string path, string name, string id, Mount montaje);
     void reporteDisco(MBR discoEditar, string pathImagen, string pathDisco);
-    void reporteMBR(MBR discoEditar, string path);
+    void reporteMBR(MBR discoEditar, string pathImagen, string pathDisco);
     void getDatosID(string id, Mount montaje, string * path, int *inicioParticion, int * sizePart, string * nombrePart, int * error);
 };
 
@@ -104,7 +104,7 @@ bool Rep::crearReporte(string path, string name, string id, Mount montaje) {
     fclose(bfile2);
 
     if (name == "mbr") {
-        reporteMBR(discoEditar, path);
+        reporteMBR(discoEditar, path, pathD);
     } else if (name == "disk") {
         reporteDisco(discoEditar, path, pathD);
     }
@@ -112,125 +112,169 @@ bool Rep::crearReporte(string path, string name, string id, Mount montaje) {
     return true;
 }
 
-void Rep::reporteMBR(MBR discoEditar, string path) {
-    string codigoInterno = "";
-    string size = to_string(discoEditar.tamano);
-    string date(discoEditar.fecha_creacion);
-    string firma = to_string(discoEditar.disk_signature);
-    string fit = "";
+void Rep::reporteMBR(MBR discoEditar, string pathImagen, string pathDisco) {
 
-    codigoInterno = "<TR>\n"
-                    "<TD><B>MBR_Tamanio</B></TD>\n"
-                    "<TD>" +
-                    size + "</TD>\n"
-                           "</TR>\n"
-                           "<TR>\n"
-                           "<TD><B>MBR_Fecha_Creacion</B></TD>\n"
-                           "<TD>" +
-                    date + "</TD>\n"
-                           "</TR>\n"
-                           "<TR>\n"
-                           "<TD><B>MBR_Disk_Signature</B></TD>\n"
-                           "<TD>" +
-                    firma + "</TD>\n"
-                            "</TR>\n"
-                            "<TR>\n"
-                            "<TD><B>MBR_Disk_Fit</B></TD>\n"
-                            "<TD>" +
-                    fit + "</TD>\n"
-                          "</TR>\n";
-
+    string hexColores[] = {"#88e3a0", "#e39688", "#e3c588", "#88e3d2", "#b488e3"};
     string codigoParticiones = "";
-    for (int i = 0; i < 4; i++) {
-        if (discoEditar.particiones[i].status == '1')
-        {
-            string size = to_string(discoEditar.particiones[i].size);
-            string name(discoEditar.particiones[i].name);
-            string Estado = "";
-            Estado.push_back(discoEditar.particiones[i].status);
-            string fit = "";
-            fit.push_back(discoEditar.particiones[i].fit);
-            string type = "";
-            type.push_back(discoEditar.particiones[i].type);
-            string part_start = to_string(discoEditar.particiones[i].start);
-            string indice = to_string((i + 1));
+    string codigoExtendidas = "";
+    int contExtendidas = 0;
 
-            codigoParticiones = codigoParticiones +
-                                "<TR>\n"
-                                "<TD><B>part_Estado_" +
-                                indice + "</B></TD>\n"
-                                         "<TD>" +
-                                Estado + "</TD>\n"
-                                         "</TR>\n"
-                                         "<TR>\n"
-                                         "<TD><B>part_Type_" +
-                                indice + "</B></TD>\n"
-                                         "<TD>" +
-                                type + "</TD>\n"
-                                       "</TR>\n"
-                                       "<TR>\n"
-                                       "<TD><B>part_Fit_" +
-                                indice + "</B></TD>\n"
-                                         "<TD>" +
-                                fit + "</TD>\n"
-                                      "</TR>\n"
-                                      "<TR>\n"
-                                      "<TD><B>part_Start_" +
-                                indice + "</B></TD>\n"
-                                         "<TD>" +
-                                part_start + "</TD>\n"
-                                             "</TR>\n"
-                                             "<TR>\n"
-                                             "<TD><B>part_Name_" +
-                                indice + "</B></TD>\n"
-                                         "<TD>" +
-                                name + "</TD>\n"
-                                       "</TR>\n";
+    FILE *bfilel = fopen(pathDisco.c_str(), "rb+");
+    if (bfilel != NULL) {
+        rewind(bfilel);
+        fread(&discoEditar, sizeof(MBR), 1, bfilel);
+        for (int i = 0; i < 4; i++) {
+            if(discoEditar.particiones[i].status != '0'){
+
+                codigoParticiones += "       <tr>"
+                                     "           <td bgcolor='" + hexColores[i] + "'><b>part" + to_string(i) +"_status</b></td>\n"
+                                     "           <td bgcolor='" + hexColores[i] +"'>" + discoEditar.particiones[i].status + "</td>\n"
+                                     "      </tr>\n"
+                                     "       <tr>\n"
+                                     "           <td bgcolor='" + hexColores[i] + "'><b>part" + to_string(i) +"_name</b></td>\n"
+                                     "           <td bgcolor='" + hexColores[i] +"'>" + discoEditar.particiones[i].name + "</td>\n"
+                                     "      </tr>\n"
+                                     "       <tr>\n"
+                                     "           <td bgcolor='" + hexColores[i] + "'><b>part" + to_string(i) +"_fit</b></td>\n"
+                                     "           <td bgcolor='" + hexColores[i] +"'>" + discoEditar.particiones[i].fit + "</td>\n"
+                                     "      </tr>\n"
+                                     "       <tr>\n"
+                                     "           <td bgcolor='" + hexColores[i] + "'><b>part" + to_string(i) +"_start</b></td>\n"
+                                     "           <td bgcolor='" + hexColores[i] +"'>" + to_string(discoEditar.particiones[i].start) + "</td>\n"
+                                     "      </tr>"
+                                     "       <tr>\n"
+                                     "           <td bgcolor='" + hexColores[i] + "'><b>part" + to_string(i) +"_size</b></td>\n"
+                                     "           <td bgcolor='" + hexColores[i] +"'>" + to_string(discoEditar.particiones[i].size) + "</td>\n"
+                                     "      </tr>"
+                                     "       <tr>\n"
+                                     "           <td bgcolor='" + hexColores[i] + "'><b>part" + to_string(i) +"_type</b></td>\n"
+                                     "           <td bgcolor='" + hexColores[i] +"'>" + discoEditar.particiones[i].type + "</td>\n"
+                                     "      </tr>\n";
+
+                if (discoEditar.particiones[i].type == 'e') {
+                    EBR logicaR;
+                    fseek(bfilel, discoEditar.particiones[i].start, SEEK_SET);
+                    fread(&logicaR, sizeof(EBR), 1, bfilel);
+
+                    while(logicaR.next != -1){
+                        codigoExtendidas += "ext" + to_string(contExtendidas++) +" [\n"
+                                        "   shape=plaintext\n"
+                                        "   label=<\n"
+                                        "   <table border='1' cellborder='1'>\n"
+                                        "       <tr>\n"
+                                        "           <td bgcolor='" + hexColores[4] +"'><b>part_name</b></td>\n"
+                                        "           <td bgcolor='" + hexColores[4] +"'>" + logicaR.name +"</td>\n"
+                                        "       </tr>"
+                                        "       <tr>\n"
+                                        "           <td bgcolor='" + hexColores[4] +"'><b>part_fit</b></td>\n"
+                                        "           <td bgcolor='" + hexColores[4] +"'>" + logicaR.fit +"</td>\n"
+                                        "       </tr>"
+                                        "       <tr>\n"
+                                        "           <td bgcolor='" + hexColores[4] +"'><b>part_start</b></td>\n"
+                                        "           <td bgcolor='" + hexColores[4] +"'>" + to_string(logicaR.part_start) +"</td>\n"
+                                        "       </tr>"
+                                        "       <tr>\n"
+                                        "           <td bgcolor='" + hexColores[4] +"'><b>part_size</b></td>\n"
+                                        "           <td bgcolor='" + hexColores[4] +"'>" + to_string(logicaR.size) +"</td>\n"
+                                        "       </tr>"
+                                        "       <tr>\n"
+                                        "           <td bgcolor='" + hexColores[4] +"'><b>part_next</b></td>\n"
+                                        "           <td bgcolor='" + hexColores[4] +"'>" + to_string(logicaR.next) +"</td>\n"
+                                        "       </tr>"
+                                        "       <tr>\n"
+                                        "           <td bgcolor='" + hexColores[4] +"'><b>part_status</b></td>\n"
+                                        "           <td bgcolor='" + hexColores[4] +"'>" + logicaR.status +"</td>\n"
+                                        "       </tr>"
+                                        "   </table>"
+                                        ">]\n";
+
+                        fseek(bfilel, logicaR.next, SEEK_SET);
+                        fread(&logicaR, sizeof(EBR), 1, bfilel);
+                    }
+
+
+                    if (contExtendidas > 0) {
+                        string rankSame = "";
+                        for (int i = 0; i < contExtendidas; i++) {
+                            if (i < contExtendidas - 1) {
+                                codigoExtendidas += "   ext" + to_string(i) + " -> ext" + to_string(i + 1) + ";\n";
+                            }
+                            rankSame += "ext" + to_string(i) + " ";
+                        }
+                        rankSame = "    {rank=same; " + rankSame + "}\n";
+                        codigoExtendidas += rankSame;
+                    }
+
+                }
+            }
         }
+        fclose(bfilel);
 
-    }
+        // CODIGO MBR
+        string codigoInterno = "";
+        string size = to_string(discoEditar.tamano);
+        string date(discoEditar.fecha_creacion);
+        string firma = to_string(discoEditar.disk_signature);
 
-    string codigo = "digraph  {\n"
-                    "graph[ratio = fill];\n"
-                    " node [label=\"\n\", fontsize=15, shape=plaintext];\n"
-                    "graph [bb=\"0,0,352,154\"];\n"
-                    "arset [label=<\n"
-                    " <TABLE ALIGN=\"LEFT\">\n"
-                    "<TR>\n"
-                    " <TD><B>Nombre</B></TD>\n"
-                    "<TD><B> Valor </B></TD>\n"
-                    "</TR>\n"
-                    + codigoInterno +
-                    codigoParticiones +
-                    "</TABLE>\n"
-                    ">, ];\n"
-                    "}";
+        string codigoMBR = "       <tr>\n"
+                           "           <td><b>MBR_Tamanio</b></td>\n"
+                           "           <td>" + size + "</td>\n"
+                           "       </tr>\n"
+                           "       <tr>\n"
+                           "           <td><b>MBR_Fecha_Creacion</b></td>\n"
+                           "           <td>" + date + "</td>\n"
+                           "       </tr>\n"
+                           "       <tr>\n"
+                           "           <td><b>MBR_Disk_Signature</b></td>\n"
+                           "           <td>" + firma + "</td>\n"
+                           "       </tr>\n";
 
-    string path1 = path;
-    string pathPng = path1.substr(0, path1.size() - 4);
-    pathPng = pathPng + ".png";
+        string codigo = "digraph  {\n"
+                        "parent [\n"
+                        "   shape=plaintext\n"
+                        "   label=<\n"
+                        "   <table border='1' cellborder='1'>\n"
+                        "       <tr>\n"
+                        "           <td><b>Propiedad</b></td>\n"
+                        "           <td><b>Valor</b></td>\n"
+                        "       </tr>"
+                        +       codigoMBR + "\n"
+                        +       codigoParticiones +
+                        "   </table>"
+                        ">];"
+                        + codigoExtendidas +
+                        "}\n";
+        string pathDot = pathImagen.substr(0, pathImagen.size() - 4) + ".dot";
+        size_t lastSlash = pathImagen.find_last_of('/');
+        string folderPathOfImage = pathImagen.substr(0, lastSlash);
+        string imageExtension = pathImagen.substr(pathImagen.size() - 3);
 
-    FILE *validar = fopen(path1.c_str(), "r");
-    if (validar != NULL) {
-        ofstream outfile(path1);
-        outfile << codigo.c_str() << endl;
-        outfile.close();
-        string comando = "dot -Tpng " + path1 + " -o " + pathPng;
 
-        system(comando.c_str());
-        fclose(validar);
-    } else {
-        string comando1 = "mkdir -p \"" + path + "\"";
-        string comando2 = "rmdir \"" + path + "\"";
-        system(comando1.c_str());
+        ofstream dotFile;
+        dotFile.open(pathDot);
+
+        if (dotFile.fail()) {
+            string comando1 = "mkdir -p \"" + folderPathOfImage + "\"";
+            system(comando1.c_str());
+        }
+        dotFile.close();
+
+        dotFile.open(pathDot);
+        dotFile << codigo;
+        dotFile.close();
+
+        string comando2 = "dot -T" + imageExtension + " \"" + pathDot + "\" -o \"" + pathImagen + "\"";
         system(comando2.c_str());
 
-        ofstream outfile(path1);
-        outfile << codigo.c_str() << endl;
-        outfile.close();
-        string comando = "dot -Tpng " + path1 + " -o " + pathPng;
-        system(comando.c_str());
+        string comandoOpen = "xdg-open \"" + pathImagen + "\"";
+        system(comandoOpen.c_str());
+
+        cout << endl << " *** Correcto: Se genero el reporte tipo MBR en - " << pathDot << endl << endl;
+
+    } else {
+        cout << endl << " *** No se pueden mostrar las particiones por path incorrecto *** " << endl << endl;
     }
+
 }
 
 void Rep::reporteDisco(MBR discoEditar, string pathImagen, string pathDisco) {
@@ -309,7 +353,6 @@ void Rep::reporteDisco(MBR discoEditar, string pathImagen, string pathDisco) {
                     "}\n";
 
     string pathDot = pathImagen.substr(0, pathImagen.size() - 4) + ".dot";
-
     size_t lastSlash = pathImagen.find_last_of('/');
     string folderPathOfImage = pathImagen.substr(0, lastSlash);
     string imageExtension = pathImagen.substr(pathImagen.size() - 3);
