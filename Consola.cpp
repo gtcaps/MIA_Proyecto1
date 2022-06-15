@@ -3,6 +3,7 @@
 //
 #include <iostream>
 #include <string>
+#include <fstream>
 #include "Consola.h"
 
 #include "Mkdisk.h"
@@ -32,43 +33,96 @@ void Consola::ejecutar() {
             continue;
         }
 
-        ejecutarComando(toLowerCase(comando));
+        ejecutarComando(comando);
 
     }
 }
 
 bool Consola::ejecutarComando(string comando) {
 
+    string lcomando = toLowerCase(comando);
+
+    // PAUSE ================
+    if (lcomando.starts_with("pause")) {
+        cout << endl << "*** Presione una tecla para continuar ***";
+        getchar();
+        cout << endl;
+        return true;
+    }
 
     // MKDISK ================
-    if (comando.starts_with("mkdisk")) {
-        return mkdisk(comando);
+    if (lcomando.starts_with("mkdisk")) {
+        return mkdisk(lcomando);
     }
 
     // RMDISK ================
-    if (comando.starts_with("rmdisk")) {
-        return rmdisk(comando);
+    if (lcomando.starts_with("rmdisk")) {
+        return rmdisk(lcomando);
     }
 
     // FDISK ================
-    if (comando.starts_with("fdisk")) {
-        return fdisk(comando);
+    if (lcomando.starts_with("fdisk")) {
+        return fdisk(lcomando);
     }
 
     // MOUNT ================
-    if (comando.starts_with("mount")) {
-        return mount(comando);
+    if (lcomando.starts_with("mount")) {
+        return mount(lcomando);
     }
 
     // UNMOUNT ================
-    if (comando.starts_with("unmount")) {
-        return unmount(comando);
+    if (lcomando.starts_with("unmount")) {
+        return unmount(lcomando);
     }
+
+    // EXEC ================
+    if (lcomando.starts_with("exec")) {
+        return exec(comando);
+    }
+
 
     cout << "comando: invalido" << endl;
 
     return false;
 }
+
+bool Consola::exec(string comando) {
+
+    vector<string> v = getAtributtes(comando);
+    string path = "";
+
+    for (auto it: v) {
+        vector<string> s = split(it);
+
+        if (s.at(0) == "path") {
+            path = s.at(1);
+        }
+    }
+
+    if (path.empty() ) {
+        cout << endl << " *** Parametros obligatorios: path *** " << endl << endl;
+        return false;
+    }
+
+    // Leer el archivo
+    ifstream archivo(path.c_str());
+
+    string lineaComando;
+    while (getline(archivo, lineaComando)) {
+
+        if (lineaComando.empty() || lineaComando.starts_with("/*")) {
+            continue;
+        }
+
+        cout << endl << ">>> Ejecutando: " <<  lineaComando << endl;
+        ejecutarComando(lineaComando);
+        cout << endl << endl;
+
+    }
+
+    return true;
+}
+
 
 bool Consola::mkdisk(string comando) {
     vector<string> v = getAtributtes(comando);
@@ -232,7 +286,6 @@ bool Consola::mount(string comando)  {
 
     for (auto it: v) {
         vector<string> s = split(it);
-        cout << it << endl;
 
         if (s.at(0) == "path") {
             path = s.at(1);
@@ -261,7 +314,6 @@ bool Consola::unmount(string comando)   {
 
     for (auto it: v) {
         vector<string> s = split(it);
-        cout << it << endl;
 
         if (s.at(0).starts_with("id")) {
             ids.insert(ids.end(), s.at(1));

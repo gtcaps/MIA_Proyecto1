@@ -11,7 +11,6 @@ bool Mount::montarParticion(string path, string name) {
 
     if (disco == NULL) {
         cout << endl << " *** Disco no existente, disco path *** " << endl << endl;
-        fclose(disco);
         return false;
     } else {
         MBR discoParticion;
@@ -90,7 +89,8 @@ bool Mount::montarParticion(string path, string name) {
         }
     }
 
-    leerMontaje();
+
+    //leerMontaje();
     return true;
 }
 
@@ -116,7 +116,7 @@ bool Mount::desmontarParticion(string id) {
         cout << endl << " *** Error: id no existe, no se desmonto la particion ***" << endl <<endl;
         return false;
     }
-    leerMontaje();
+    //leerMontaje();
     return true;
 }
 
@@ -125,8 +125,9 @@ void Mount::leerMontaje() {
     for (int i = 0; i < 26; i++) {
         for (int j = 0; j < 99; j++) {
             if (discos[i].particiones[j].estado == 1) {
-                cout << "vd" << discos[i].letra << discos[i].particiones[j].numero << endl;
+                cout << "vd" << discos[i].letra << discos[i].particiones[j].numero << " - " << discos[i].path << endl;
             }
         }
     }
+    cout << endl;
 }
