@@ -16,6 +16,7 @@ public:
     bool crearReporte(string path, string name, string id, Mount montaje);
     void reporteDisco(MBR discoEditar, string pathImagen, string pathDisco);
     void reporteMBR(MBR discoEditar, string pathImagen, string pathDisco);
+    void reporteSB(string nombreParticion, string pathImagen, string pathDisco);
     void getDatosID(string id, Mount montaje, string * path, int *inicioParticion, int * sizePart, string * nombrePart, int * error);
 };
 
@@ -107,10 +108,172 @@ bool Rep::crearReporte(string path, string name, string id, Mount montaje) {
         reporteMBR(discoEditar, path, pathD);
     } else if (name == "disk") {
         reporteDisco(discoEditar, path, pathD);
+    } else if (name == "sb") {
+        reporteSB(nombreParticion, path, pathD);
     }
 
     return true;
 }
+
+void Rep::reporteSB(string nombreParticion, string pathImagen, string pathDisco) {
+
+    FILE *archivo;
+
+    archivo = fopen(pathDisco.c_str(), "rb+");
+
+    if(archivo == NULL){
+        cout << endl << " >> *** El disco no existe *** " << endl << endl;
+        return;
+    }
+
+    int inicio_particion = 0;
+
+    MBR mbr;
+    fseek(archivo, 0, SEEK_SET);
+    fread(&mbr, sizeof(mbr), 1, archivo);
+
+    for(int i = 0; i < 4; i++){
+        if(strcmp(mbr.particiones[i].name, nombreParticion.c_str()) == 0){
+            //cout << " >> Size: " << mbr_.mbr_particions[i].part_size << " \n";
+            inicio_particion = mbr.particiones[i].start;
+            //tam_particion = mbr_.mbr_particions[i].part_size;
+            break;
+        }
+
+    }
+
+    // superbloque auxiliar
+    SuperBloque sb_aux;
+    fseek(archivo, inicio_particion, SEEK_SET);
+
+    // Escribir el reporte del superbloque
+    string pathDot = pathImagen.substr(0, pathImagen.size() - 4) + ".dot";
+    size_t lastSlash = pathImagen.find_last_of('/');
+    string folderPathOfImage = pathImagen.substr(0, lastSlash);
+    string imageExtension = pathImagen.substr(pathImagen.size() - 3);
+
+    ofstream reporte;
+    reporte.open(pathDot, ios::out);
+
+    if (reporte.fail()) {
+        string comando1 = "mkdir -p \"" + folderPathOfImage + "\"";
+        system(comando1.c_str());
+    }
+    reporte.close();
+
+    reporte.open(pathDot);
+
+    reporte << "digraph G {\n"
+            << "node [shape=plaintext] \n"
+            << "nodo [ \n"
+            << " label =< \n"
+            << "<table border=\"0\" cellborder=\"1\" cellspacing=\"0\">"
+            << "<tr> <td bgcolor=\"#30A6BB\">Nombre</td> <td bgcolor=\"#30A6BB\"> Valor </td> </tr>";
+
+    // Empiezo a leer el superbloque
+    fread(&sb_aux, sizeof(SuperBloque), 1, archivo);
+
+    reporte << "<tr>\n";
+    reporte << "<td bgcolor=\"#89D8E7\"> s_inodes_count </td>";
+    reporte << "<td bgcolor=\"#C7F6FF\">" << sb_aux.inodes_count << " </td> \n";
+    reporte << "</tr>";
+
+    reporte << "<tr>\n";
+    reporte << "<td bgcolor=\"#89D8E7\"> s_blocks_count </td>";
+    reporte << "<td bgcolor=\"#C7F6FF\">" << sb_aux.blocks_count << " </td> \n";
+    reporte << "</tr>";
+
+    reporte << "<tr>\n";
+    reporte << "<td bgcolor=\"#89D8E7\"> s_free_blocks_count </td>";
+    reporte << "<td bgcolor=\"#C7F6FF\">" << sb_aux.free_blocks_count << " </td> \n";
+    reporte << "</tr>";
+
+    reporte << "<tr>\n";
+    reporte << "<td bgcolor=\"#89D8E7\"> s_free_inodes_count </td>";
+    reporte << "<td bgcolor=\"#C7F6FF\">" << sb_aux.free_inodes_count << " </td> \n";
+    reporte << "</tr>";
+
+    reporte << "<tr>\n";
+    reporte << "<td bgcolor=\"#89D8E7\"> s_mtime </td>";
+    reporte << "<td bgcolor=\"#C7F6FF\">" << sb_aux.mtime << " </td> \n";
+    reporte << "</tr>";
+
+    reporte << "<tr>\n";
+    reporte << "<td bgcolor=\"#89D8E7\"> s_umtime </td>";
+    reporte << "<td bgcolor=\"#C7F6FF\">" << sb_aux.umtime << " </td> \n";
+    reporte << "</tr>";
+
+    reporte << "<tr>\n";
+    reporte << "<td bgcolor=\"#89D8E7\"> s_mnt_count </td>";
+    reporte << "<td bgcolor=\"#C7F6FF\">" << sb_aux.mnt_count << " </td> \n";
+    reporte << "</tr>";
+
+    reporte << "<tr>\n";
+    reporte << "<td bgcolor=\"#89D8E7\"> s_magic </td>";
+    reporte << "<td bgcolor=\"#C7F6FF\">" << sb_aux.magic << " </td> \n";
+    reporte << "</tr>";
+
+    reporte << "<tr>\n";
+    reporte << "<td bgcolor=\"#89D8E7\"> s_inode_size </td>";
+    reporte << "<td bgcolor=\"#C7F6FF\">" << sb_aux.inode_size << " </td> \n";
+    reporte << "</tr>";
+
+    reporte << "<tr>\n";
+    reporte << "<td bgcolor=\"#89D8E7\"> s_block_size </td>";
+    reporte << "<td bgcolor=\"#C7F6FF\">" << sb_aux.block_size << " </td> \n";
+    reporte << "</tr>";
+
+    reporte << "<tr>\n";
+    reporte << "<td bgcolor=\"#89D8E7\"> s_first_ino </td>";
+    reporte << "<td bgcolor=\"#C7F6FF\">" << sb_aux.first_ino << " </td> \n";
+    reporte << "</tr>";
+
+    reporte << "<tr>\n";
+    reporte << "<td bgcolor=\"#89D8E7\"> s_first_blo </td>";
+    reporte << "<td bgcolor=\"#C7F6FF\">" << sb_aux.first_blo << " </td> \n";
+    reporte << "</tr>";
+
+    reporte << "<tr>\n";
+    reporte << "<td bgcolor=\"#89D8E7\"> s_bm_inode_start </td>";
+    reporte << "<td bgcolor=\"#C7F6FF\">" << sb_aux.bm_inode_start << " </td> \n";
+    reporte << "</tr>";
+
+    reporte << "<tr>\n";
+    reporte << "<td bgcolor=\"#89D8E7\"> s_bm_block_start </td>";
+    reporte << "<td bgcolor=\"#C7F6FF\">" << sb_aux.bm_block_start << " </td> \n";
+    reporte << "</tr>";
+
+    reporte << "<tr>\n";
+    reporte << "<td bgcolor=\"#89D8E7\"> s_inode_start </td>";
+    reporte << "<td bgcolor=\"#C7F6FF\">" << sb_aux.inode_start << " </td> \n";
+    reporte << "</tr>";
+
+    reporte << "<tr>\n";
+    reporte << "<td bgcolor=\"#89D8E7\"> s_block_start </td>";
+    reporte << "<td bgcolor=\"#C7F6FF\">" << sb_aux.block_start << " </td> \n";
+    reporte << "</tr>";
+
+    reporte << "</table>\n";
+    reporte << ">\n";
+    reporte << "];\n";
+    reporte << "}";
+
+
+    reporte.close();
+    fclose(archivo);
+
+    string comando2 = "dot -T" + imageExtension + " \"" + pathDot + "\" -o \"" + pathImagen + "\"";
+    system(comando2.c_str());
+
+    string comandoOpen = "xdg-open \"" + pathImagen + "\"";
+    system(comandoOpen.c_str());
+
+    cout << endl << " *** Correcto: Se genero el reporte tipo MBR en - " << pathDot << endl << endl;
+
+
+
+}
+
 
 void Rep::reporteMBR(MBR discoEditar, string pathImagen, string pathDisco) {
 
