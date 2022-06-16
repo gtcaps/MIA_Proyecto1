@@ -10,6 +10,7 @@
 #include "Rmdisk.h"
 #include "Fdisk.h"
 #include "Rep.h"
+#include "Mkfs.h"
 
 
 using namespace std;
@@ -84,6 +85,11 @@ bool Consola::ejecutarComando(string comando) {
     // REP ================
     if (lcomando.starts_with("rep")) {
         return rep(lcomando);
+    }
+
+    // MKFS ================
+    if (lcomando.starts_with("mkfs")) {
+        return mkfs(lcomando);
     }
 
 
@@ -374,6 +380,59 @@ bool Consola::rep(string comando)   {
     rep.crearReporte(path, name, id, montaje);
 
     return true;
+
+
+}
+
+bool Consola::mkfs(string comando)   {
+
+    vector<string> v = getAtributtes(comando);
+    string id = "", type = "", add = "0", unit = "";
+
+    for (auto it: v) {
+        vector<string> s = split(it);
+
+        if (s.at(0).starts_with("id")) {
+            id = s.at(1);
+        }
+
+        if (s.at(0).starts_with("type")) {
+            type = s.at(1);
+        }
+
+        if (s.at(0).starts_with("add")) {
+            add = s.at(1);
+        }
+
+        if (s.at(0).starts_with("unit")) {
+            unit = s.at(1);
+        }
+    }
+
+    if (id.empty()) {
+        cout << endl << " *** Parametros obligatorios: id *** " << endl << endl;
+        return false;
+    }
+
+    if (type.empty()) {
+        type = "full";
+    }
+
+    int addInt = 0;
+    if (isNumber(add)) {
+        addInt = stoi(add);
+    } else {
+        cout << endl << " *** El parametro add debe ser un numero *** " << endl << endl;
+        return false;
+    }
+
+    if (unit.empty()) {
+        unit = "k";
+    }
+
+
+    Mkfs mkfs;
+    return mkfs.formatearFS(id, type, addInt, unit, montaje);
 
 
 }

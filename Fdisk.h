@@ -69,8 +69,10 @@ bool Fdisk::createParticion(int size, string unit, string path, string name, str
     if (type == "p" || type == "e") {
 
     } else if (type == "l") {
-        createParticionLogica(particion, path);
-        showParticiones(path);
+        bool logicaCreada = createParticionLogica(particion, path);
+        if (logicaCreada) {
+            showParticiones(path);
+        }
         return true;
     } else {
         cout << endl << " *** Error en el tipo de particion *** " << endl << endl;

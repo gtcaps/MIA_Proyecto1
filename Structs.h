@@ -35,8 +35,8 @@ struct SuperBloque {
     int     blocks_count = 0;
     int     free_blocks_count = 0;
     int     free_inodes_count = 0;
-    time_t  mtime;
-    time_t  umtime;
+    char    mtime[20];
+    char    umtime[20];
     int     mnt_count = 0;
     int     magic = 0;
     int     inode_size = 0;
@@ -53,9 +53,9 @@ struct Inodo {
     int     uid;
     int     gid;
     int     size;
-    time_t  atime;
-    time_t  ctime;
-    time_t  mtime;
+    char    atime[20];
+    char    ctime[20];
+    char    mtime[20];
     int     block[15];
     char    type;
     int     perm;
@@ -67,12 +67,12 @@ struct Content {
     int     inodo;
 };
 
-struct BloqueCarpetas {
+struct BloqueCarpeta {
     Content content[4];
 };
 
 // BLOQUE DE ARCHIVOS
-struct BloqueArchivos {
+struct BloqueArchivo {
     char content[64];
 };
 
@@ -81,5 +81,17 @@ struct BloqueArchivos {
 struct BloqueApuntadores {
     int pointers[16];
 };
+
+// JOURNALING
+struct Journaling{
+    int estado;
+    char tipo_op[10];
+    char tipo;
+    char path[100];
+    char fecha_op[25];
+    char contenido[100];
+    char id_propietario;
+    int tamanio;
+} ;
 
 #endif //VACASJUNIO_MIA_PROYECTO1_STRUCTS_H
