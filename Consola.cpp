@@ -92,6 +92,10 @@ bool Consola::ejecutarComando(string comando) {
         return mkfs(lcomando);
     }
 
+    // MKFILE ================
+    if (lcomando.starts_with("mkfile")) {
+        return mkfile(lcomando);
+    }
 
     cout << "comando: invalido" << endl;
 
@@ -430,10 +434,57 @@ bool Consola::mkfs(string comando)   {
         unit = "k";
     }
 
-
     Mkfs mkfs;
     return mkfs.formatearFS(id, type, addInt, unit, montaje);
 
+}
+
+bool Consola::mkfile(string comando)   {
+
+    vector<string> v = getAtributtes(comando);
+    string id = "", path = "", p = "", size = "0", cont = "";
+
+    for (auto it: v) {
+        vector<string> s = split(it);
+
+        cout << it << endl;
+
+        if (s.at(0).starts_with("id")) {
+            id = s.at(1);
+        }
+
+        if (s.at(0).starts_with("path")) {
+            path = s.at(1);
+        }
+
+        if (s.at(0).starts_with("p")) {
+            p = s.at(1);
+        }
+
+        if (s.at(0).starts_with("size")) {
+            size = s.at(1);
+        }
+
+        if (s.at(0).starts_with("cont")) {
+            cont = s.at(1);
+        }
+    }
+
+    if (id.empty() || path.empty()) {
+        cout << endl << " *** Parametros obligatorios: id, path *** " << endl << endl;
+        return false;
+    }
+
+    if (isNumber(size) && stoi(size) < 0) {
+        cout << endl << " *** Size no puede ser negativo *** " << endl << endl;
+        return false;
+    }
+
+
+    
+
+
+    return false;
 
 }
 
@@ -454,6 +505,21 @@ vector<string> Consola::getAtributtes(string comando) {
     for (int i = 0; i < comando.length(); i++) {
         char c = comando[i];
         if (c == '$' || c == '@') {
+
+            if (comando[i + 1] == 'p' && (i + 1) == comando.length() - 1) {
+                atributos.insert(atributos.end(), "p-p");
+                i = i + 1;
+                continue;
+            }
+
+            if ((i + 2) < comando.length() && comando[i + 1] == 'p' && comando[i + 2] == ' ') {
+                atributos.insert(atributos.end(), "p-p");
+                i = i + 2;
+                atributo = "";
+                valor = "";
+                continue;
+            }
+
             for (int j = i + 1; j < comando.length(); j++) {
                 c = comando [j];
                 if (c == '=') {

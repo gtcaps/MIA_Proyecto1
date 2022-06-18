@@ -1,4 +1,4 @@
-/home/gtcaps/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/221.5787.29/bin/cmake/linux/bin/cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MAKE_PROGRAM=/home/gtcaps/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/221.5787.29/bin/ninja/linux/ninja -G Ninja -S /home/gtcaps/Documents/VacasJunio-MIA-Proyecto1 -B /home/gtcaps/Documents/VacasJunio-MIA-Proyecto1/cmake-build-debug
+/home/gtcaps/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/221.5787.29/bin/cmake/linux/bin/cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MAKE_PROGRAM=/home/gtcaps/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/221.5787.29/bin/ninja/linux/ninja -G Ninja -S "/home/gtcaps/Documents/USAC VACAS JUNIO 2022/MIA_Proyecto1" -B "/home/gtcaps/Documents/USAC VACAS JUNIO 2022/MIA_Proyecto1/cmake-build-debug"
 -- Configuring done
 -- Generating done
--- Build files have been written to: /home/gtcaps/Documents/VacasJunio-MIA-Proyecto1/cmake-build-debug
+-- Build files have been written to: /home/gtcaps/Documents/USAC VACAS JUNIO 2022/MIA_Proyecto1/cmake-build-debug

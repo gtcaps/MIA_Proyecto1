@@ -17,6 +17,11 @@ public:
     void reporteDisco(MBR discoEditar, string pathImagen, string pathDisco);
     void reporteMBR(MBR discoEditar, string pathImagen, string pathDisco);
     void reporteSB(string nombreParticion, string pathImagen, string pathDisco);
+    void reporteBm_Inode(string nombreParticion, string pathImagen, string pathDisco);
+    void reporteBm_Block(string nombreParticion, string pathImagen, string pathDisco);
+    void reporteJournaling(string nombreParticion, string pathImagen, string pathDisco);
+    void reporteInodos(string nombreParticion, string pathImagen, string pathDisco);
+    void reporteBloques(string nombreParticion, string pathImagen, string pathDisco);
     void getDatosID(string id, Mount montaje, string * path, int *inicioParticion, int * sizePart, string * nombrePart, int * error);
 };
 
@@ -110,9 +115,521 @@ bool Rep::crearReporte(string path, string name, string id, Mount montaje) {
         reporteDisco(discoEditar, path, pathD);
     } else if (name == "sb") {
         reporteSB(nombreParticion, path, pathD);
+    } else if (name == "bm_inode") {
+        reporteBm_Inode(nombreParticion, path, pathD);
+    } else if (name == "bm_block") {
+        reporteBm_Block(nombreParticion, path, pathD);
+    } else if (name == "inode") {
+        reporteInodos(nombreParticion, path, pathD);
+    } else if (name == "journaling") {
+        reporteJournaling(nombreParticion, path, pathD);
+    } else if (name == "block") {
+        reporteBloques(nombreParticion, path, pathD);
+    } else {
+        cout << endl << " *** No existe el reporte que buscas *** " << endl << endl;
     }
 
     return true;
+}
+
+void Rep::reporteBloques(string nombreParticion, string pathImagen, string pathDisco) {
+    FILE *archivo;
+
+    archivo = fopen(pathDisco.c_str(), "rb+");
+
+    if(archivo == NULL){
+        cout << " >> El disco no existe. \n";
+    }
+
+
+    int inicio_particion = 0;
+
+    MBR mbr_;
+    fseek(archivo, 0, SEEK_SET);
+    fread(&mbr_, sizeof(MBR), 1, archivo);
+
+    for(int i = 0; i < 4; i++){
+        if(strcmp(mbr_.particiones[i].name, nombreParticion.c_str()) == 0){
+            //cout << " >> Size: " << mbr_.mbr_particions[i].part_size << " \n";
+            inicio_particion = mbr_.particiones[i].start;
+            //tam_particion = mbr_.mbr_particions[i].part_size;
+            break;
+        }
+
+    }
+
+    // superbloque auxiliar
+    SuperBloque sb_aux;
+    fseek(archivo, inicio_particion, SEEK_SET);
+    fread(&sb_aux, sizeof(SuperBloque), 1, archivo);
+    int inicio_bloques = sb_aux.block_start;
+    int bloques_usados = sb_aux.blocks_count - sb_aux.free_blocks_count;
+
+    string pathDot = pathImagen.substr(0, pathImagen.size() - 4) + ".dot";
+    size_t lastSlash = pathImagen.find_last_of('/');
+    string folderPathOfImage = pathImagen.substr(0, lastSlash);
+    string imageExtension = pathImagen.substr(pathImagen.size() - 3);
+
+    ofstream reporte;
+    reporte.open(pathDot, ios::out);
+
+    if (reporte.fail()) {
+        string comando1 = "mkdir -p \"" + folderPathOfImage + "\"";
+        system(comando1.c_str());
+    }
+    reporte.close();
+
+    reporte.open(pathDot);
+
+    reporte << "digraph Journaling { \n"
+            << "node [shape=plaintext] \n";
+
+    BloqueCarpeta bl_carpeta_aux;
+
+    for(int i = 0; i < bloques_usados; i++){
+
+        fseek(archivo, inicio_bloques + i*64, SEEK_SET);
+        fread(&bl_carpeta_aux, 64, 1, archivo);
+        reporte << "nodo"<< i <<"[\n";
+
+        reporte << "\t label =< \n"
+                << "\t\t <table border=\"0\" cellborder=\"1\" cellspacing=\"0\"> \n"
+                << "\t\t\t <tr> \n"
+                << "\t\t\t\t <td bgcolor=\"#30A6BB\">No. Bloque </td> <td bgcolor=\"#30A6BB\"> "<< i <<"  </td> \n"
+                << "\t\t\t </tr> \n";
+
+        reporte << "\t\t\t <tr> \n"
+                << "\t\t\t\t <td bgcolor=\"#C7F6FF\"> b_name </td> <td bgcolor=\"#C7F6FF\"> b_inodo </td> \n"
+                << "\t\t\t </tr> \n";
+
+        for(int j = 0; j < 4; j++){
+            reporte << "\t\t\t <tr> \n"
+                    << "\t\t\t\t <td bgcolor=\"#C7F6FF\"> "<< bl_carpeta_aux.content[j].inodo << " </td> <td bgcolor=\"#C7F6FF\"> "<< bl_carpeta_aux.content[j].name <<" </td> \n"
+                    << "\t\t\t </tr> \n";
+        }
+
+        reporte << "\t\t </table> \n"
+                << "\t > \n"
+                << "]; \n";
+
+    }
+
+    BloqueArchivo bl_archivo_aux;
+
+    for(int i = 0; i < bloques_usados; i++){
+
+        fseek(archivo, inicio_bloques + i*64, SEEK_SET);
+        fread(&bl_archivo_aux, 64, 1, archivo);
+        reporte << "nodoaux"<< i <<"[\n";
+
+        reporte << "\t label =< \n"
+                << "\t\t <table border=\"0\" cellborder=\"1\" cellspacing=\"0\"> \n"
+                << "\t\t\t <tr> \n"
+                << "\t\t\t\t <td bgcolor=\"#30A6BB\">No. Bloque </td> <td bgcolor=\"#30A6BB\"> "<< i <<"  </td> \n"
+                << "\t\t\t </tr> \n";
+
+        reporte << "\t\t\t <tr> \n"
+                << "\t\t\t\t <td bgcolor=\"#C7F6FF\"> content </td> <td bgcolor=\"#C7F6FF\"> " << bl_archivo_aux.content <<" </td> \n"
+                << "\t\t\t </tr> \n";
+
+
+        reporte << "\t\t </table> \n"
+                << "\t > \n"
+                << "]; \n";
+
+    }
+
+
+
+    reporte << "}\n";
+
+    reporte.close();
+    fclose(archivo);
+
+    string comando2 = "dot -T" + imageExtension + " \"" + pathDot + "\" -o \"" + pathImagen + "\"";
+    system(comando2.c_str());
+
+    string comandoOpen = "xdg-open \"" + pathImagen + "\"";
+    system(comandoOpen.c_str());
+
+    cout << endl << " *** Correcto: Se genero el reporte tipo MBR en - " << pathDot << endl << endl;
+
+}
+
+void Rep::reporteInodos(string nombreParticion, string pathImagen, string pathDisco) {
+    FILE *archivo;
+
+    archivo = fopen(pathDisco.c_str(), "rb+");
+
+    if(archivo == NULL){
+        cout << " >> El disco no existe. \n";
+    }
+
+    int inicio_particion = 0;
+
+    MBR mbr_;
+    fseek(archivo, 0, SEEK_SET);
+    fread(&mbr_, sizeof(MBR), 1, archivo);
+
+    for(int i = 0; i < 4; i++){
+        if(strcmp(mbr_.particiones[i].name, nombreParticion.c_str()) == 0){
+            //cout << " >> Size: " << mbr_.mbr_particions[i].part_size << " \n";
+            inicio_particion = mbr_.particiones[i].start;
+            //tam_particion = mbr_.mbr_particions[i].part_size;
+            break;
+        }
+
+    }
+
+    // superbloque auxiliar
+    SuperBloque sb_aux;
+    fseek(archivo, inicio_particion, SEEK_SET);
+    fread(&sb_aux, sizeof(SuperBloque), 1, archivo);
+    int inicio_inodos = sb_aux.inode_start;
+
+    // Escribir el reporte del superbloque
+    string pathDot = pathImagen.substr(0, pathImagen.size() - 4) + ".dot";
+    size_t lastSlash = pathImagen.find_last_of('/');
+    string folderPathOfImage = pathImagen.substr(0, lastSlash);
+    string imageExtension = pathImagen.substr(pathImagen.size() - 3);
+
+    ofstream reporte;
+    reporte.open(pathDot, ios::out);
+
+    if (reporte.fail()) {
+        string comando1 = "mkdir -p \"" + folderPathOfImage + "\"";
+        system(comando1.c_str());
+    }
+    reporte.close();
+
+    reporte.open(pathDot);
+
+
+    Inodo inodo_aux;
+    int inodos_ocupados = sb_aux.inodes_count - sb_aux.free_inodes_count;
+
+    reporte << "digraph Inode {\n"
+            << "node [shape=plaintext] \n";
+
+
+
+
+    for(int i = 0; i < inodos_ocupados; i++){
+        fseek(archivo, inicio_inodos, SEEK_SET);
+        fread(&inodo_aux, sizeof(Inodo), 1, archivo);
+        reporte << "nodo"<< i <<" [\n"
+                << "label =< \n";
+
+        reporte << "<table border=\"0\" cellborder=\"1\" cellspacing=\"0\">"
+                << "<tr> <td bgcolor=\"#30A6BB\">Nombre</td> <td bgcolor=\"#30A6BB\"> Valor </td> </tr>";
+
+        reporte << "<tr>\n";
+        reporte << "<td bgcolor=\"#89D8E7\"> i_uid </td>";
+        reporte << "<td bgcolor=\"#C7F6FF\">" << inodo_aux.uid << " </td> \n";
+        reporte << "</tr>";
+
+        reporte << "<tr>\n";
+        reporte << "<td bgcolor=\"#89D8E7\"> i_gid </td>";
+        reporte << "<td bgcolor=\"#C7F6FF\">" << inodo_aux.gid << " </td> \n";
+        reporte << "</tr>";
+
+        reporte << "<tr>\n";
+        reporte << "<td bgcolor=\"#89D8E7\"> i_atime </td>";
+        reporte << "<td bgcolor=\"#C7F6FF\">" << inodo_aux.atime << " </td> \n";
+        reporte << "</tr>";
+
+
+        for(int j = 0; j < 15; j++){
+
+            if(inodo_aux.block[j] != -1){
+                reporte << "<tr>\n";
+                reporte << "<td bgcolor=\"#89D8E7\"> i_block_" << j << " </td>";
+                reporte << "<td bgcolor=\"#C7F6FF\">" << inodo_aux.block[j] << " </td> \n";
+                reporte << "</tr>";
+            }
+        }
+
+        reporte << "<tr>\n";
+        reporte << "<td bgcolor=\"#89D8E7\"> i_perm </td>";
+        reporte << "<td bgcolor=\"#C7F6FF\">" << inodo_aux.perm << " </td> \n";
+        reporte << "</tr>";
+
+        reporte << "<tr>\n";
+        reporte << "<td bgcolor=\"#89D8E7\"> i_type </td>";
+        reporte << "<td bgcolor=\"#C7F6FF\">" << inodo_aux.type << " </td> \n";
+        reporte << "</tr>";
+
+        reporte << "</table>\n";
+        reporte << ">\n";
+        reporte << "];\n";
+
+    }
+
+    reporte << "}";
+
+    reporte.close();
+    fclose(archivo);
+
+    string comando2 = "dot -T" + imageExtension + " \"" + pathDot + "\" -o \"" + pathImagen + "\"";
+    system(comando2.c_str());
+
+    string comandoOpen = "xdg-open \"" + pathImagen + "\"";
+    system(comandoOpen.c_str());
+
+    cout << endl << " *** Correcto: Se genero el reporte tipo MBR en - " << pathDot << endl << endl;
+}
+
+void Rep::reporteJournaling(string nombreParticion, string pathImagen, string pathDisco) {
+
+    FILE *archivo;
+
+    archivo = fopen(pathDisco.c_str(), "rb+");
+
+    if(archivo == NULL){
+        cout << " >> El disco no existe. \n";
+    }
+
+    int inicio_particion = 0;
+
+    MBR mbr_;
+    fseek(archivo, 0, SEEK_SET);
+    fread(&mbr_, sizeof(MBR), 1, archivo);
+
+    for(int i = 0; i < 4; i++){
+        if(strcmp(mbr_.particiones[i].name, nombreParticion.c_str()) == 0){
+            //cout << " >> Size: " << mbr_.mbr_particions[i].part_size << " \n";
+            inicio_particion = mbr_.particiones[i].start;
+            //tam_particion = mbr_.mbr_particions[i].part_size;
+            break;
+        }
+
+    }
+
+    // superbloque auxiliar
+    SuperBloque sb_aux;
+    fseek(archivo, inicio_particion, SEEK_SET);
+    fread(&sb_aux, sizeof(SuperBloque), 1, archivo);
+    int num_journaling = sb_aux.inodes_count;
+
+    // Escribir el reporte del superbloque
+    string pathDot = pathImagen.substr(0, pathImagen.size() - 4) + ".dot";
+    size_t lastSlash = pathImagen.find_last_of('/');
+    string folderPathOfImage = pathImagen.substr(0, lastSlash);
+    string imageExtension = pathImagen.substr(pathImagen.size() - 3);
+
+    ofstream reporte;
+    reporte.open(pathDot, ios::out);
+
+    if (reporte.fail()) {
+        string comando1 = "mkdir -p \"" + folderPathOfImage + "\"";
+        system(comando1.c_str());
+    }
+    reporte.close();
+
+    reporte.open(pathDot);
+
+    int inicio_journaling = inicio_particion + sizeof(SuperBloque);
+
+    Journaling journaling_aux;
+    fseek(archivo, inicio_journaling + sizeof(Journaling), SEEK_SET);
+    fread(&journaling_aux, sizeof(Journaling), 1, archivo);
+
+    reporte << "digraph Journaling { \n"
+            << "node [shape=plaintext] \n";
+
+    for(int i = 0; i < sb_aux.inodes_count; i++){
+
+        fseek(archivo, inicio_journaling + sizeof(Journaling)*i, SEEK_SET);
+
+        if(journaling_aux.estado == 1){
+            fread(&journaling_aux, sizeof(Journaling), 1 , archivo);
+            cout << " Esta activo \n";
+
+            reporte << "nodo"<< i <<"[\n";
+            reporte << "\t label =< \n"
+                    << "\t\t <table border=\"0\" cellborder=\"1\" cellspacing=\"0\"> \n"
+                    << "\t\t\t <tr> \n"
+                    << "\t\t\t\t <td bgcolor=\"#30A6BB\">No. </td> <td bgcolor=\"#30A6BB\"> Tipo operacion </td> \n"
+                    << "\t\t\t\t <td bgcolor=\"#30A6BB\">Fecha operacion </td> <td bgcolor=\"#30A6BB\"> path </td> \n"
+                    << "\t\t\t\t <td bgcolor=\"#30A6BB\">Tamanio </td> <td bgcolor=\"#30A6BB\"> Id propiertario </td> \n"
+                    << "\t\t\t\t <td bgcolor=\"#30A6BB\">Contenido </td> <td bgcolor=\"#30A6BB\"> Tipo </td> \n"
+                    << "\t\t\t </tr> \n";
+
+            reporte << "\t\t\t <tr> \n"
+                    << "\t\t\t\t <td bgcolor=\"#C7F6FF\"> " << i + 1 << "</td> <td bgcolor=\"#C7F6FF\"> " << journaling_aux.tipo <<" </td> \n"
+                    << "\t\t\t\t <td bgcolor=\"#C7F6FF\"> " << journaling_aux.fecha_op << "</td> <td bgcolor=\"#C7F6FF\">" << journaling_aux.path <<" </td> \n"
+                    << "\t\t\t\t <td bgcolor=\"#C7F6FF\"> " << journaling_aux.tamanio << "</td> <td bgcolor=\"#C7F6FF\">" << journaling_aux.id_propietario <<" </td> \n"
+                    << "\t\t\t\t <td bgcolor=\"#C7F6FF\"> " << journaling_aux.contenido << "</td> <td bgcolor=\"#C7F6FF\">" << journaling_aux.tipo_op <<" </td> \n"
+                    << "\t\t\t </tr> \n"
+                    << "\t\t </table> \n"
+                    << "\t > \n"
+                    << "]; \n";
+
+            // enlazando invisiblemente las tablas
+            reporte << "nodo" << i << "->nodo" << i+1 << "[style=invis]\n";
+
+        }
+    }
+
+    reporte << "}\n";
+
+    reporte.close();
+    fclose(archivo);
+
+    string comando2 = "dot -T" + imageExtension + " \"" + pathDot + "\" -o \"" + pathImagen + "\"";
+    system(comando2.c_str());
+
+    string comandoOpen = "xdg-open \"" + pathImagen + "\"";
+    system(comandoOpen.c_str());
+
+    cout << endl << " *** Correcto: Se genero el reporte tipo MBR en - " << pathDot << endl << endl;
+
+}
+
+void Rep::reporteBm_Block(string nombreParticion, string pathImagen, string pathDisco) {
+    FILE *archivo;
+
+    archivo = fopen(pathDisco.c_str(), "rb+");
+
+    if(archivo == NULL){
+        cout << " >> El disco no existe. \n";
+    }
+
+    int inicio_particion = 0;
+
+    MBR mbr_;
+    fseek(archivo, 0, SEEK_SET);
+    fread(&mbr_, sizeof(MBR), 1, archivo);
+
+    for(int i = 0; i < 4; i++){
+        if(strcmp(mbr_.particiones[i].name, nombreParticion.c_str()) == 0){
+            //cout << " >> Size: " << mbr_.mbr_particions[i].part_size << " \n";
+            inicio_particion = mbr_.particiones[i].start;
+            //tam_particion = mbr_.mbr_particions[i].part_size;
+            break;
+        }
+
+    }
+
+    // superbloque auxiliar
+    SuperBloque sb_aux;
+    fseek(archivo, inicio_particion, SEEK_SET);
+
+    // Escribir el reporte del bitmap de inodos
+    string pathDot = pathImagen.substr(0, pathImagen.size() - 4) + ".dot";
+    size_t lastSlash = pathImagen.find_last_of('/');
+    string folderPathOfImage = pathImagen.substr(0, lastSlash);
+    string imageExtension = pathImagen.substr(pathImagen.size() - 3);
+
+    ofstream reporte;
+    reporte.open(pathDot, ios::out);
+
+    if (reporte.fail()) {
+        string comando1 = "mkdir -p \"" + folderPathOfImage + "\"";
+        system(comando1.c_str());
+    }
+    reporte.close();
+
+    reporte.open(pathDot);
+
+    // Empiezo a leer el superbloque
+    fread(&sb_aux, sizeof(SuperBloque), 1, archivo);
+
+    fseek(archivo, sb_aux.bm_block_start, SEEK_SET);
+
+    // Escribo el bitmap de inodos en el txt
+    char bitchar[sb_aux.blocks_count];
+
+    for(int i = 0; i < sb_aux.blocks_count; i++){
+
+        fseek(archivo, sb_aux.bm_block_start + i*sizeof(char), SEEK_SET);
+        reporte << "  " << bitchar[i] << "  |  ";
+
+        //cout << "  " <<bitchar[i] << "  |  ";
+        if(i%20 == 0){
+            reporte << "  +  \n";
+            //cout << "  +  \n";
+        }
+    }
+
+    reporte.close();
+    fclose(archivo);
+}
+
+void Rep::reporteBm_Inode(string nombreParticion, string pathImagen, string pathDisco) {
+    FILE *archivo;
+
+    archivo = fopen(pathDisco.c_str(), "rb+");
+
+    if(archivo == NULL){
+        cout << " >> El disco no existe. \n";
+    }
+
+    int inicio_particion = 0;
+
+    MBR mbr_;
+    fseek(archivo, 0, SEEK_SET);
+    fread(&mbr_, sizeof(MBR), 1, archivo);
+
+    for(int i = 0; i < 4; i++){
+        if(strcmp(mbr_.particiones[i].name, nombreParticion.c_str()) == 0){
+            //cout << " >> Size: " << mbr_.mbr_particions[i].part_size << " \n";
+            inicio_particion = mbr_.particiones[i].start;
+            //tam_particion = mbr_.mbr_particions[i].part_size;
+            break;
+        }
+
+    }
+
+    // superbloque auxiliar
+    SuperBloque sb_aux;
+    fseek(archivo, inicio_particion, SEEK_SET);
+
+    // Escribir el reporte del bitmap de inodos
+    string pathDot = pathImagen.substr(0, pathImagen.size() - 4) + ".txt";
+    size_t lastSlash = pathImagen.find_last_of('/');
+    string folderPathOfImage = pathImagen.substr(0, lastSlash);
+    string imageExtension = pathImagen.substr(pathImagen.size() - 3);
+
+    ofstream reporte;
+    reporte.open(pathDot, ios::out);
+
+    if (reporte.fail()) {
+        string comando1 = "mkdir -p \"" + folderPathOfImage + "\"";
+        system(comando1.c_str());
+    }
+    reporte.close();
+
+    reporte.open(pathDot);
+
+    if(reporte.fail()){
+        cout << " >> No se pudo abrir \n";
+    }
+
+    // Empiezo a leer el superbloque
+    fread(&sb_aux, sizeof(SuperBloque), 1, archivo);
+
+    fseek(archivo, sb_aux.bm_inode_start, SEEK_SET);
+
+    // Escribo el bitmap de inodos en el txt
+    char bitchar[sb_aux.inodes_count];
+
+    for(int i = 0; i < sb_aux.inodes_count; i++){
+
+        fseek(archivo, sb_aux.bm_inode_start + i*sizeof(char), SEEK_SET);
+        reporte << "  " << bitchar[i] << "  |  ";
+
+        //cout << "  " <<bitchar[i] << "  |  ";
+        if(i%20 == 0){
+            reporte << "  +  \n";
+            //cout << "  +  \n";
+        }
+    }
+
+    reporte.close();
+    fclose(archivo);
+
+    cout << endl << " *** Correcto: Se genero el reporte tipo BM Inode en - " << pathDot << endl << endl;
 }
 
 void Rep::reporteSB(string nombreParticion, string pathImagen, string pathDisco) {

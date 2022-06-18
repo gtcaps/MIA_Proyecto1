@@ -39,7 +39,7 @@ include CMakeFiles/rules.ninja
 #############################################
 # Logical path to working directory; prefix for absolute paths.
 
-cmake_ninja_workdir = /home/gtcaps/Documents/VacasJunio-MIA-Proyecto1/cmake-build-debug/
+cmake_ninja_workdir = /home/gtcaps/Documents/USAC$ VACAS$ JUNIO$ 2022/MIA_Proyecto1/cmake-build-debug/
 # =============================================================================
 # Object build statements for EXECUTABLE target VacasJunio_MIA_Proyecto1
 
@@ -49,14 +49,26 @@ cmake_ninja_workdir = /home/gtcaps/Documents/VacasJunio-MIA-Proyecto1/cmake-buil
 
 build cmake_object_order_depends_target_VacasJunio_MIA_Proyecto1: phony || CMakeFiles/VacasJunio_MIA_Proyecto1.dir
 
-build CMakeFiles/VacasJunio_MIA_Proyecto1.dir/main.cpp.o: CXX_COMPILER__VacasJunio_MIA_Proyecto1_Debug /home/gtcaps/Documents/VacasJunio-MIA-Proyecto1/main.cpp || cmake_object_order_depends_target_VacasJunio_MIA_Proyecto1
+build CMakeFiles/VacasJunio_MIA_Proyecto1.dir/main.cpp.o: CXX_COMPILER__VacasJunio_MIA_Proyecto1_Debug /home/gtcaps/Documents/USAC$ VACAS$ JUNIO$ 2022/MIA_Proyecto1/main.cpp || cmake_object_order_depends_target_VacasJunio_MIA_Proyecto1
   DEP_FILE = CMakeFiles/VacasJunio_MIA_Proyecto1.dir/main.cpp.o.d
   FLAGS = -g -std=gnu++2a
   OBJECT_DIR = CMakeFiles/VacasJunio_MIA_Proyecto1.dir
   OBJECT_FILE_DIR = CMakeFiles/VacasJunio_MIA_Proyecto1.dir
 
-build CMakeFiles/VacasJunio_MIA_Proyecto1.dir/Consola.cpp.o: CXX_COMPILER__VacasJunio_MIA_Proyecto1_Debug /home/gtcaps/Documents/VacasJunio-MIA-Proyecto1/Consola.cpp || cmake_object_order_depends_target_VacasJunio_MIA_Proyecto1
+build CMakeFiles/VacasJunio_MIA_Proyecto1.dir/Consola.cpp.o: CXX_COMPILER__VacasJunio_MIA_Proyecto1_Debug /home/gtcaps/Documents/USAC$ VACAS$ JUNIO$ 2022/MIA_Proyecto1/Consola.cpp || cmake_object_order_depends_target_VacasJunio_MIA_Proyecto1
   DEP_FILE = CMakeFiles/VacasJunio_MIA_Proyecto1.dir/Consola.cpp.o.d
+  FLAGS = -g -std=gnu++2a
+  OBJECT_DIR = CMakeFiles/VacasJunio_MIA_Proyecto1.dir
+  OBJECT_FILE_DIR = CMakeFiles/VacasJunio_MIA_Proyecto1.dir
+
+build CMakeFiles/VacasJunio_MIA_Proyecto1.dir/Mount.cpp.o: CXX_COMPILER__VacasJunio_MIA_Proyecto1_Debug /home/gtcaps/Documents/USAC$ VACAS$ JUNIO$ 2022/MIA_Proyecto1/Mount.cpp || cmake_object_order_depends_target_VacasJunio_MIA_Proyecto1
+  DEP_FILE = CMakeFiles/VacasJunio_MIA_Proyecto1.dir/Mount.cpp.o.d
+  FLAGS = -g -std=gnu++2a
+  OBJECT_DIR = CMakeFiles/VacasJunio_MIA_Proyecto1.dir
+  OBJECT_FILE_DIR = CMakeFiles/VacasJunio_MIA_Proyecto1.dir
+
+build CMakeFiles/VacasJunio_MIA_Proyecto1.dir/Carpeta.cpp.o: CXX_COMPILER__VacasJunio_MIA_Proyecto1_Debug /home/gtcaps/Documents/USAC$ VACAS$ JUNIO$ 2022/MIA_Proyecto1/Carpeta.cpp || cmake_object_order_depends_target_VacasJunio_MIA_Proyecto1
+  DEP_FILE = CMakeFiles/VacasJunio_MIA_Proyecto1.dir/Carpeta.cpp.o.d
   FLAGS = -g -std=gnu++2a
   OBJECT_DIR = CMakeFiles/VacasJunio_MIA_Proyecto1.dir
   OBJECT_FILE_DIR = CMakeFiles/VacasJunio_MIA_Proyecto1.dir
@@ -69,7 +81,7 @@ build CMakeFiles/VacasJunio_MIA_Proyecto1.dir/Consola.cpp.o: CXX_COMPILER__Vacas
 #############################################
 # Link the executable VacasJunio_MIA_Proyecto1
 
-build VacasJunio_MIA_Proyecto1: CXX_EXECUTABLE_LINKER__VacasJunio_MIA_Proyecto1_Debug CMakeFiles/VacasJunio_MIA_Proyecto1.dir/main.cpp.o CMakeFiles/VacasJunio_MIA_Proyecto1.dir/Consola.cpp.o
+build VacasJunio_MIA_Proyecto1: CXX_EXECUTABLE_LINKER__VacasJunio_MIA_Proyecto1_Debug CMakeFiles/VacasJunio_MIA_Proyecto1.dir/main.cpp.o CMakeFiles/VacasJunio_MIA_Proyecto1.dir/Consola.cpp.o CMakeFiles/VacasJunio_MIA_Proyecto1.dir/Mount.cpp.o CMakeFiles/VacasJunio_MIA_Proyecto1.dir/Carpeta.cpp.o
   FLAGS = -g
   OBJECT_DIR = CMakeFiles/VacasJunio_MIA_Proyecto1.dir
   POST_BUILD = :
@@ -82,7 +94,7 @@ build VacasJunio_MIA_Proyecto1: CXX_EXECUTABLE_LINKER__VacasJunio_MIA_Proyecto1_
 # Utility command for edit_cache
 
 build CMakeFiles/edit_cache.util: CUSTOM_COMMAND
-  COMMAND = cd /home/gtcaps/Documents/VacasJunio-MIA-Proyecto1/cmake-build-debug && /home/gtcaps/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/221.5787.29/bin/cmake/linux/bin/ccmake -S/home/gtcaps/Documents/VacasJunio-MIA-Proyecto1 -B/home/gtcaps/Documents/VacasJunio-MIA-Proyecto1/cmake-build-debug
+  COMMAND = cd "/home/gtcaps/Documents/USAC VACAS JUNIO 2022/MIA_Proyecto1/cmake-build-debug" && /home/gtcaps/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/221.5787.29/bin/cmake/linux/bin/ccmake -S"/home/gtcaps/Documents/USAC VACAS JUNIO 2022/MIA_Proyecto1" -B"/home/gtcaps/Documents/USAC VACAS JUNIO 2022/MIA_Proyecto1/cmake-build-debug"
   DESC = Running CMake cache editor...
   pool = console
   restat = 1
@@ -94,7 +106,7 @@ build edit_cache: phony CMakeFiles/edit_cache.util
 # Utility command for rebuild_cache
 
 build CMakeFiles/rebuild_cache.util: CUSTOM_COMMAND
-  COMMAND = cd /home/gtcaps/Documents/VacasJunio-MIA-Proyecto1/cmake-build-debug && /home/gtcaps/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/221.5787.29/bin/cmake/linux/bin/cmake --regenerate-during-build -S/home/gtcaps/Documents/VacasJunio-MIA-Proyecto1 -B/home/gtcaps/Documents/VacasJunio-MIA-Proyecto1/cmake-build-debug
+  COMMAND = cd "/home/gtcaps/Documents/USAC VACAS JUNIO 2022/MIA_Proyecto1/cmake-build-debug" && /home/gtcaps/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/221.5787.29/bin/cmake/linux/bin/cmake --regenerate-during-build -S"/home/gtcaps/Documents/USAC VACAS JUNIO 2022/MIA_Proyecto1" -B"/home/gtcaps/Documents/USAC VACAS JUNIO 2022/MIA_Proyecto1/cmake-build-debug"
   DESC = Running CMake to regenerate build system...
   pool = console
   restat = 1
@@ -110,7 +122,7 @@ build rebuild_cache: phony CMakeFiles/rebuild_cache.util
 # =============================================================================
 
 #############################################
-# Folder: /home/gtcaps/Documents/VacasJunio-MIA-Proyecto1/cmake-build-debug
+# Folder: /home/gtcaps/Documents/USAC VACAS JUNIO 2022/MIA_Proyecto1/cmake-build-debug
 
 build all: phony VacasJunio_MIA_Proyecto1
 

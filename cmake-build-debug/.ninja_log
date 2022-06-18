@@ -1,6 +1,12 @@
 # ninja log v5
-0	351	1654603900230341513	CMakeFiles/VacasJunio_MIA_Proyecto1.dir/main.cpp.o	5e39738f686ad09
-0	583	1654603900462342333	CMakeFiles/VacasJunio_MIA_Proyecto1.dir/Consola.cpp.o	f45077f8432618e3
-583	652	1654603900534342588	VacasJunio_MIA_Proyecto1	521d3fc91118faf2
-0	340	1654603935758467951	CMakeFiles/VacasJunio_MIA_Proyecto1.dir/main.cpp.o	5e39738f686ad09
-340	405	1654603935822468180	VacasJunio_MIA_Proyecto1	521d3fc91118faf2
+897	963	1655350271101157216	VacasJunio_MIA_Proyecto1	dfb7e3cae43be0ba
+0	366	1655240449358468637	CMakeFiles/VacasJunio_MIA_Proyecto1.dir/main.cpp.o	ee9d7ad6ebd935ed
+0	897	1655350271037156943	CMakeFiles/VacasJunio_MIA_Proyecto1.dir/Consola.cpp.o	1f16bacb6a340934
+1	354	1655347886525749488	CMakeFiles/VacasJunio_MIA_Proyecto1.dir/Mount.cpp.o	fe80ea294d6a3738
+0	14	1655441552132241770	build.ninja	a03febfad6cd3b3e
+1	390	1655553506943627062	CMakeFiles/VacasJunio_MIA_Proyecto1.dir/Carpeta.cpp.o	db3e9c95bfe03fad
+1	951	1655553507507627752	CMakeFiles/VacasJunio_MIA_Proyecto1.dir/Consola.cpp.o	1f16bacb6a340934
+0	1161	1655553589503740736	CMakeFiles/VacasJunio_MIA_Proyecto1.dir/Consola.cpp.o	1f16bacb6a340934
+1162	1237	1655553589579740852	VacasJunio_MIA_Proyecto1	f394f45ec9d65c8f
+0	919	1655553689603909462	CMakeFiles/VacasJunio_MIA_Proyecto1.dir/Consola.cpp.o	1f16bacb6a340934
+920	999	1655553689683909609	VacasJunio_MIA_Proyecto1	f394f45ec9d65c8f

@@ -187,7 +187,7 @@ bool Mkfs::formatearFS(string id, string type, int add, string unit, Mount monta
         journal.estado = 0;
         journal.fecha_op[0] ='\0';
         journal.path[0] = '\0';
-        journal.tipo = '-1';
+        journal.tipo = '0';
         strcpy(journal.contenido, " -- ");
         journal.tamanio = 0;
         journal.tipo_op[0] = '\0';
@@ -374,7 +374,7 @@ bool Mkfs::formatearFS(string id, string type, int add, string unit, Mount monta
         sb_aux.free_blocks_count--; // resto el bloque de archivos
         fwrite(&sb_aux, sizeof(SuperBloque), 1, archivo);
 
-        cout << endl << " >> Particion formateada en EXT3. \n";
+        cout << endl << " >> Particion formateada. \n" << endl << endl;
         fclose(archivo);
     }
 

@@ -1,37 +1,22 @@
-pause
-/*crearemos 8 discos...*/
-/*verificar tamaño de discos...*/
 MKdisk $siZe=>120 $path=>"/home/archivos/fase 1/" $NAMe=>"D1.dsk"
-mkdisK $siZe=>32 $path=>"/home/archivos/fase 1/" $NAMe=>"D2.dsk" 
+mkdisK $siZe=>32 $path=>"/home/archivos/fase 1/" $NAMe=>"D2.dsk"
 MKdisk $siZe=>64 $PatH=>"/home/archivos/fase 1/" $NAMe=>"D3.dsk"
-MKdisk $siZe=>80 $path=>"/home/archivos/fase 1/" $NAMe=>"D4.dsk" 
+MKdisk $siZe=>80 $path=>"/home/archivos/fase 1/" $NAMe=>"D4.dsk"
 MKdisk $siZe=>120 $path=>"/home/archivos/fase 1/" $NAMe=>"D5.dsk"
 MKdisk $siZe=>8 $path=>"/home/archivos/fase 1/" $NAMe=>"D6.dsk"
 
 pause
-/*vamos a verificar si hicieron validaciones con datos incorrectos*/
-/*primero el siZe tiene numero menor a 0, segundo el 60 no es multiplo de 8*/
 MKdisk $siZe=>-60 $path=>"/home/archivos/fase 1/" $NAMe=>"D7.dsk"
 MKdisk $siZe=>60 $path=>"/home/archivos/fase 1/" $NAMe=>"D8.dsk"
 
 pause
-/*Eliminar discos, solo quedaran 3 discos*/
-/*Verificacion de mensaje de confirmacion de eliminacion de discos*/
 RMdisk $patH=>"/home/archivos/fase 1/D5.dsk"
 RMdisk $patH=>"/home/archivos/fase 1/D4.dsk"
 
 pause
-/*Verificando validaciones con datos incorrectos en el rmdisk*/
-/*Deberia de dar error ya que el disco 8 no existe*/
 rmDiSK $path=>"/home/archivos/fase 1/D8.dsk"
 
 pause
-/*Crear 12 particiones del mismo tamaño en el primer disco con ajustes diferentes*/
-/*PrimarIA 1 es de 10 Mb*/
-/*Todas son de 5 Mb (La extendida es de 50 Mb)*/
-/*Tipo:		Primaria	Primaria	Extendida	Logica	Logica	Logica	Logica	Logica	Logica	Logica	Logica Primaria*/
-/*Ajuste:	Primer 		Mejor		$			Peor	Peor	Peor	Peor	Peor	Peor	Peor	Mejor   Peor*/
-/*NAMe:	PRI 1		PRI 2		EXT			LOG 1	LOG 2	LOG 3	LOG 4	LOG 5	LOG 6	LOG 7	LOG8   PRI 3*/
 fdisk $siZe=>10 @UniT=>M $path=>"/home/archivos/fase 1/D1.dsk"    @type=>P @fit=>FF $NAMe=>"PRI 1"
 fdisk $path=>"/home/archivos/fase 1/D1.dsk" $siZe=>5120 	  @fit=>BF $NAMe=>"PRI 2"
 fdisk $path=>"/home/archivos/fase 1/D1.dsk" @type=>E $NAMe=>"EXT" $siZe=>51200
@@ -46,12 +31,6 @@ fdIsk @type=>L $siZe=>5120 @unit=>K $path=>"/home/archivos/fase 1/D1.dsk" $NAMe=
 fdisk @unit=>B $path=>"/home/archivos/fase 1/D1.dsk" $siZe=>5242880 $NAMe=>"PRI 3"
 
 pause
-/*Crearemos las mismas 12 particiones en el tercer disco*/
-/*PrimarIA 1 es de 10 Mb*/
-/*eL RESTO son de 5 Mb (La extendida es de 50 Mb)*/
-/*Tipo:		Primaria	Primaria	Extendida	Logica	Logica	Logica	Logica	Logica	Logica	Logica	Logica Primaria*/
-/*Ajuste:	Primer 		Mejor		$			Peor	Peor	Peor	Peor	Peor	Peor	Peor	Mejor   Peor*/
-/*NAMe:	PRI 1		PRI 2		EXT			LOG 1	LOG 2	LOG 3	LOG 4	LOG 5	LOG 6	LOG 7	LOG8   PRI 3*/
 
 fdisk $siZe=>10 @UniT=>M $path=>"/home/archivos/fase 1/D3.dsk"     @type=>P @fit=>FF $NAMe=>"PRI 1"
 fdisk $path=>"/home/archivos/fase 1/D3.dsk" $siZe=>5120 	 @fit=>BF $NAMe=>"PRI 2"
@@ -67,108 +46,30 @@ fdIsk @type=>L $siZe=>5120 @unit=>K $path=>"/home/archivos/fase 1/D3.dsk" $NAMe=
 fdisk @unit=>B $path=>"/home/archivos/fase 1/D3.dsk" $siZe=>5242880 $NAMe=>"PRI 3"
 
 pause
-/*Verificar generacion de ids al montar*/
-/*Debería generar los ids: vda1, vdb1, vda2, vdb2*/
-/*vda para el d3.dsk y vdb para d1.dsk*/
+
 mouNt $NAMe=>"PRI 3"  $path=>"/home/archivos/fase 1/D3.dsk"
 moUnt $PAth=>"/home/archivos/fase 1/D1.dsk" $NAMe=>"PRI 3"
 mOunt $NAMe=>"PRI 2" $path=>"/home/archivos/fase 1/D3.dsk"
 mouNt $path=>"/home/archivos/fase 1/D1.dsk" $NAMe=>"PRI 2"
 
 pause
-/*Validaciones al montar, no deberia cargarlos*/
-moUnt $NAMe=>PX $path=>"/home/archivos/fase 1/D3.dsk"
-moUNt $path=>"/home/archivos/fase 1/DX.dsk" $NAMe=>"PRI 3"
 
-pause
-/*Listar las particiones montadas*/
-mouNt
-
-pause
-/*SAlida es la siguiente*/
-/*id=>vda1 $path=>"/home/archivos/fase 1/D3.dsk" $NAMe=>"PRI 3"*/
-/*id=>vdb1 $PAth=>"/home/archivos/fase 1/D1.dsk" $NAMe=>"PRI 3"*/
-/*id=>vda2 $path=>"/home/archivos/fase 1/D3.dsk" $NAMe=>"PRI 2"*/
-/*id=>vdb2 $path=>"/home/archivos/fase 1/D1.dsk" $NAMe=>"PRI 2"*/
-
-pause
-/*Reporte de las particiones del disco*/
-/*Debe crear la carpeta de reportes*/
 rep $NAMe=>"disk" $path=>"/home/archivos/fase 1/reportes/Reporte1_Disco_Disco3.jpg" $id=>vda1
+pause
 rep $path=>"/home/archivos/fase 1/reportes/Reporte1_disco_Disco1.jpg" $id=>vdb1 $NAMe=>"disk"
+pause
 rep $NAMe=>"mbr" $path=>"/home/archivos/fase 1/reportes/Reporte1_MBR_Disco3.jpg" $id=>vda1
+pause
 rep $path=>"/home/archivos/fase 1/reportes/Reporte1_MBR_Disco1.jpg" $id=>vdb1 $NAMe=>"mbr"
 
 pause
-/*Vericamos la eliminación*/
-/*Elimina la primaria 2, logica 1, logica 2 y logica 5 del disco 1*/
-/*Queda así: P1 EXT L2 L3 L6 L7 L8 P3*/
-fdisk @delete=>Fast $NAMe=>"PRI 2" $path=>"/home/archivos/fase 1/D1.dsk"
-fdisk $path=>"/home/archivos/fase 1/D1.dsk" $NAMe=>"LOG 1" @delete=>FasT
-fDisk $NAMe=>"LOG 4" @delete=>FaST $PAth=>"/home/archivos/fase 1/D1.dsk"
-fdisK $path=>"/home/archivos/fase 1/D1.dsk" $NAMe=>"LOG 5" @delete=>FAsT
 
-pAusE
-/*Tambien elimina la partición extendida y la primaria 1 del disco 3*/
-/*Verificar que no queden EBRs*/
-/*Queda así: P2 P3*/
-fDisk $DELete=>Full $NAMe=>"EXT" $path=>"/home/archivos/fase 1/D3.dsk" @Delete=>Full
-fdisk @Delete=>Full $NAMe=>"PRI 1" @Delete=>Full $path=>"/home/archivos/fase 1/D3.dsk"
-
-paUSE
-/*Reporte con particiones eliminadas*/
-rep $id=>vda1 $NAMe=>"disk" $path=>"/home/archivos/fase 1/reportes/Reporte2_disco_Disco3.jpg"
-rep $path=>"/home/archivos/fase 1/reportes/Reporte2_disco_Disco1.jpg" $NAMe=>"disk" $id=>vdb1
-rep $NAMe=>"mbr" $path=>"/home/archivos/fase 1/reportes/Reporte2_MBR_Disco3.jpg" $id=>vda1
-rep $path=>"/home/archivos/fase 1/reportes/Reporte2_MBR_Disco1.jpg" $id=>vdb1 $NAMe=>"mbr"
+MkfS $id=>vda1 @type=>full
 
 pause
-/*TEORIA DE PARTICIONES, (solo una extendida) debería dar error*/
-fdisk $siZe=>2048 $path=>"/home/archivos/fase 1/D1.dsk" @type=>E $NAMe=>"EXT2"
 
-pauSe
-/*Verificar PRIMER AJUSTE creando de nuevo las particiones*/
-/*Debe quedar de la siguiente forma:*/
-/*Disco1: PRIMARIA1 PRIMARIA2 EXTENDIDA LOGICA1 LOGICA2 LOGICA3 LOGICA45 LOGICA6 LOGICA7 LOGICA8 PRIMARIA3*/
-fdiSk @unit=>M $siZe=>5 $path=>"/home/archivos/fase 1/D1.dsk" @type=>P @fit=>FF $NAMe=>"PRI 2"
-fdisk $path=>"/home/archivos/fase 1/D1.dsk" $siZe=>10240 @type=>L $NAMe=>"LOG 45" @unit=>K
-fdisk $path=>"/home/archivos/fase 1/D1.dsk" $siZe=>5120 @type=>L $NAMe=>"LOG 1" @unit=>K
+rep $id=>vda1 $Path=>"/home/archivos/fase 1/reportes/sb.jpg" $name=>sb
 
 pause
-/*Disco 3: Primaria2 EXTENDIDA LOGICA1 PRIMARIA1 PRIMARIA3*/
-fdisk @type=>E $path=>"/home/archivos/fase 1/D3.dsk" $siZe=>10240 $NAMe=>"EXT"
-fdiSk $NAMe=>"LOG 1" @unit=>K $path=>"/home/archivos/fase 1/D3.dsk" @type=>L $siZe=>5120
-fdisk $siZe=>10240 $NAMe=>"PRI 1" $path=>"/home/archivos/fase 1/D3.dsk" @type=>P
 
-Pause
-/*Reporte de las particiones del disco*/
-Rep $Path=>"/home/archivos/fase 1/reportes/Reporte3_disco_Disco3.jpg" $id=>vda1 $NAMe=>"disk"
-rep $NAMe=>"disk" $path=>"/home/archivos/fase 1/reportes/Reporte3_disco_Disco2.jpg" $id=>vdb1
-
-PAUSE
-/*Validaciones al crear o quitar espacio*/
-/*No deberia ejecutar estas instrucciones*/
-/*(porque no hay espacio después)*/
-fdisk $path=>"/home/archivos/fase 1/D1.dsk" $NAMe=>"PRI 1" @add=>3
-/*(porque no debe quedar espacio negativo) debe mostrar mensaje de cuanto puede quitarle*/
-fdisk @add=>-20 @unit=>M $path=>"/home/archivos/fase 1/D1.dsk" $NAMe=>"PRI 1" @unit=>M
-/*(Porque no hay suficiente espacio)*/
-fdisk @unit=>M $path=>"/home/archivos/fase 1/D1.dsk" $NAMe=>"LOG 7" @add=>150
-
-PAUSE
-/*Quita y agrega 1 mb de la primer particion*/
-fdisk @unit=>M $path=>"/home/archivos/fase 1/D1.dsk" $NAMe=>"PRI 1" @add=>-1
-rep $NAMe=>"Mbr" $path=>"/home/archivos/fase 1/reportes/Reporte4_MBR_Espacio_Disco1.jpg" $id=>vdb2
-fdisk @unit=>M $path=>"/home/archivos/fase 1/D1.dsk" $NAMe=>"PRI 1" @add=>1
-rep $NAMe=>"Mbr" $path=>"/home/archivos/fase 1/reportes/Reporte5_MBR_Espacio_Disco1.jpg" $id=>vdb2
-/*Le quita 1 mb a la partición logica*/
-fdisk @unit=>M $path=>"/home/archivos/fase 1/D1.dsk" $NAMe=>"LOG 45" @add=>$1
-rep $NAMe=>"Mbr" $path=>"/home/archivos/fase 1/reportes/Reporte6_Espacio_MBR Disco1.jpg" $id=>vdb2
-
-PAUSe
-/*desmontar una lista de ids
-unmount $id1=>vda1 $id2=>vdb2 $id=>vda2
-/*para corroborar que desmonto hacer un mount para listar las particiones montadas*/
-mount
-/*Salida es la siguiente*/
-/*id=>vdb1 $PAth=>"/home/archivos/fase 1/D1.dsk" $NAMe=>"PRI 3"*/
+rep $id=>vda3 $Path=>"/home/archivos/fase 1/reportes/sb3.jpg" $name=>sb
